@@ -1,28 +1,20 @@
 # QuantityMeasurementApp
-UC5 – Unit-to-Unit Conversion
+## UC6: Addition of Length Measurements
 
-Convert measurements from one unit to another.
+**What I implemented:**
+- Added functionality to add two length measurements.
+- Supported addition between the same and different units.
+- Added support for Feet, Inches, Yards and Centimeters.
+- The result is returned in the first measurement's unit by default.
+- Added an overloaded method to specify the result unit.
+- Added validation for null values and invalid numeric inputs.
+- Preserved the original measurements without modifying them.
 
-Added static conversion using QuantityLength.convert().
+**What it is used for:**
+- Adds two length measurements accurately, even when they use different units.
+- Example: 1 Foot + 12 Inches = 2 Feet.
+- Example: 12 Inches + 1 Foot = 24 Inches.
 
-Added object-based conversion using convertTo().
-
-Added validation for invalid values and null units.
-
-Maintained immutability during conversion.
-
-Added readable measurement output using toString().
-
-Demonstrated method overloading with two demonstrateLengthConversion() methods.
-
-## Project Progress
-
-Use Cases UC1 to UC5 have been successfully implemented and tested.
-
-- UC1 – Feet Measurement Equality
-- UC2 – Inches Measurement Equality
-- UC3 – Generic Quantity Class
-- UC4 – Extended Unit Support
-- UC5 – Unit-to-Unit Conversion
-
-All 63 tests passed, with no failures.
+**Testing:**
+- Added 14 test cases covering same-unit addition, cross-unit addition, commutativity, zero, negative values, large and small values, null operands and explicit target units.
+- All 77 project tests passed successfully.

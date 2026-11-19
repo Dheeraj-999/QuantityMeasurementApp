@@ -3,7 +3,7 @@ package com.quantitymeasurement;
 
 /**
  * Generic class representing length measurements.
- * Supports equality checking and conversion between units.
+ * Supports equality checking, conversion and addition.
  */
 public class QuantityLength {
 
@@ -33,23 +33,15 @@ public class QuantityLength {
 
     /**
      * Converts a measurement from one unit to another.
-     *
-     * @param value measurement value
-     * @param source source unit
-     * @param target target unit
-     * @return converted measurement value
-     * @throws IllegalArgumentException if input is invalid
      */
     public static double convert(
             double value, LengthUnit source, LengthUnit target) {
 
-        // Validate measurement value
         if (!Double.isFinite(value)) {
             throw new IllegalArgumentException(
                     "Measurement value must be finite");
         }
 
-        // Validate source and target units
         if (source == null || target == null) {
             throw new IllegalArgumentException(
                     "Source and target units cannot be null");
@@ -62,7 +54,6 @@ public class QuantityLength {
         double convertedValue =
                 valueInFeet / target.getConversionFactor();
 
-        // Validate the converted result
         if (!Double.isFinite(convertedValue)) {
             throw new IllegalArgumentException(
                     "Converted value is outside the supported range");
@@ -74,15 +65,97 @@ public class QuantityLength {
     /**
      * Converts the current measurement into another unit.
      * Returns a new QuantityLength object.
-     *
-     * @param target target unit
-     * @return new converted QuantityLength object
      */
     public QuantityLength convertTo(LengthUnit target) {
 
         double convertedValue = convert(value, unit, target);
 
         return new QuantityLength(convertedValue, target);
+    }
+
+    /**
+     * UC6: Adds two QuantityLength objects.
+     * The result is expressed in the first operand's unit.
+     *
+     * @param first first length measurement
+     * @param second second length measurement
+     * @return new QuantityLength object containing the sum
+     */
+    public static QuantityLength add(
+            QuantityLength first, QuantityLength second) {
+
+        // Validate both operands
+        if (first == null || second == null) {
+            throw new IllegalArgumentException(
+                    "Length measurements cannot be null");
+        }
+
+        // Convert both measurements into feet
+        double firstInFeet = first.convertToFeet();
+        double secondInFeet = second.convertToFeet();
+
+        // Add both measurements
+        double sumInFeet = firstInFeet + secondInFeet;
+
+        // Validate addition result
+        if (!Double.isFinite(sumInFeet)) {
+            throw new IllegalArgumentException(
+                    "Addition result is outside the supported range");
+        }
+
+        // Convert the result into the first operand's unit
+        double result = convert(
+                sumInFeet, LengthUnit.FEET, first.unit);
+
+        // Return a new immutable object
+        return new QuantityLength(result, first.unit);
+    }
+
+    /**
+     * UC6: Adds two raw length measurements.
+     * The result is expressed in the specified target unit.
+     *
+     * @param value1 first measurement value
+     * @param unit1 first measurement unit
+     * @param value2 second measurement value
+     * @param unit2 second measurement unit
+     * @param targetUnit unit of the result
+     * @return new QuantityLength object containing the sum
+     */
+    public static QuantityLength add(
+            double value1, LengthUnit unit1,
+            double value2, LengthUnit unit2,
+            LengthUnit targetUnit) {
+
+        // Validate input values
+        if (!Double.isFinite(value1) || !Double.isFinite(value2)) {
+            throw new IllegalArgumentException(
+                    "Measurement values must be finite");
+        }
+
+        // Validate all units
+        if (unit1 == null || unit2 == null || targetUnit == null) {
+            throw new IllegalArgumentException(
+                    "Units cannot be null");
+        }
+
+        // Convert both measurements into feet
+        double firstInFeet = value1 * unit1.getConversionFactor();
+        double secondInFeet = value2 * unit2.getConversionFactor();
+
+        // Add both measurements
+        double sumInFeet = firstInFeet + secondInFeet;
+
+        if (!Double.isFinite(sumInFeet)) {
+            throw new IllegalArgumentException(
+                    "Addition result is outside the supported range");
+        }
+
+        // Convert the sum into the requested target unit
+        double result = convert(
+                sumInFeet, LengthUnit.FEET, targetUnit);
+
+        return new QuantityLength(result, targetUnit);
     }
 
     // Converts the measurement into the common base unit (feet)
@@ -94,20 +167,16 @@ public class QuantityLength {
     @Override
     public boolean equals(Object obj) {
 
-        // Check whether both references point to the same object
         if (this == obj) {
             return true;
         }
 
-        // Check for null or different object types
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
 
-        // Convert Object into QuantityLength
         QuantityLength other = (QuantityLength) obj;
 
-        // Compare both measurements after converting to feet
         return Double.compare(
                 this.convertToFeet(),
                 other.convertToFeet()
