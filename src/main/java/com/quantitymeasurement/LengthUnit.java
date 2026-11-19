@@ -6,7 +6,9 @@ public enum LengthUnit {
 
     // Conversion factors relative to feet (base unit)
     FEET(1.0),
-    INCHES(1.0 / 12.0);
+    INCHES(1.0 / 12.0),
+    YARDS(3.0),
+    CENTIMETERS(0.393701 / 12.0);
 
     // Stores the conversion factor
     private final double conversionFactor;
