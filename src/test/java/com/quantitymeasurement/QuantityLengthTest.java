@@ -336,4 +336,161 @@ class QuantityLengthTest {
         assertEquals(yard.hashCode(), feet.hashCode());
     }
 
+
+    // UC5: Basic conversions
+
+    @Test
+    void testConversion_FeetToInches() {
+        assertEquals(12.0,
+                QuantityLength.convert(1.0,
+                        LengthUnit.FEET, LengthUnit.INCHES),
+                1e-6);
+    }
+
+    @Test
+    void testConversion_InchesToFeet() {
+        assertEquals(2.0,
+                QuantityLength.convert(24.0,
+                        LengthUnit.INCHES, LengthUnit.FEET),
+                1e-6);
+    }
+
+    @Test
+    void testConversion_YardsToInches() {
+        assertEquals(36.0,
+                QuantityLength.convert(1.0,
+                        LengthUnit.YARDS, LengthUnit.INCHES),
+                1e-6);
+    }
+
+    @Test
+    void testConversion_InchesToYards() {
+        assertEquals(2.0,
+                QuantityLength.convert(72.0,
+                        LengthUnit.INCHES, LengthUnit.YARDS),
+                1e-6);
+    }
+
+    @Test
+    void testConversion_CentimetersToInches() {
+        assertEquals(1.0,
+                QuantityLength.convert(2.54,
+                        LengthUnit.CENTIMETERS, LengthUnit.INCHES),
+                1e-6);
+    }
+
+    @Test
+    void testConversion_FeetToYards() {
+        assertEquals(2.0,
+                QuantityLength.convert(6.0,
+                        LengthUnit.FEET, LengthUnit.YARDS),
+                1e-6);
+    }
+
+    // UC5: Same-unit conversion
+
+    @Test
+    void testConversion_SameUnit() {
+        assertEquals(5.0,
+                QuantityLength.convert(5.0,
+                        LengthUnit.FEET, LengthUnit.FEET),
+                1e-6);
+    }
+
+    // UC5: Zero and negative values
+
+    @Test
+    void testConversion_ZeroValue() {
+        assertEquals(0.0,
+                QuantityLength.convert(0.0,
+                        LengthUnit.FEET, LengthUnit.INCHES),
+                1e-6);
+    }
+
+    @Test
+    void testConversion_NegativeValue() {
+        assertEquals(-12.0,
+                QuantityLength.convert(-1.0,
+                        LengthUnit.FEET, LengthUnit.INCHES),
+                1e-6);
+    }
+
+    // UC5: Round-trip conversion
+
+    @Test
+    void testConversion_RoundTrip_PreservesValue() {
+        double original = 10.0;
+
+        double inches = QuantityLength.convert(
+                original, LengthUnit.FEET, LengthUnit.INCHES);
+
+        double convertedBack = QuantityLength.convert(
+                inches, LengthUnit.INCHES, LengthUnit.FEET);
+
+        assertEquals(original, convertedBack, 1e-6);
+    }
+
+    // UC5: Invalid inputs
+
+    @Test
+    void testConversion_NullSourceUnit() {
+        assertThrows(IllegalArgumentException.class,
+                () -> QuantityLength.convert(
+                        1.0, null, LengthUnit.FEET));
+    }
+
+    @Test
+    void testConversion_NullTargetUnit() {
+        assertThrows(IllegalArgumentException.class,
+                () -> QuantityLength.convert(
+                        1.0, LengthUnit.FEET, null));
+    }
+
+    @Test
+    void testConversion_NaNValue() {
+        assertThrows(IllegalArgumentException.class,
+                () -> QuantityLength.convert(
+                        Double.NaN,
+                        LengthUnit.FEET, LengthUnit.INCHES));
+    }
+
+    @Test
+    void testConversion_InfiniteValue() {
+        assertThrows(IllegalArgumentException.class,
+                () -> QuantityLength.convert(
+                        Double.POSITIVE_INFINITY,
+                        LengthUnit.FEET, LengthUnit.INCHES));
+    }
+
+    // UC5: Instance conversion
+
+    @Test
+    void testConversion_InstanceMethod() {
+        QuantityLength original =
+                new QuantityLength(1.0, LengthUnit.FEET);
+
+        QuantityLength converted =
+                original.convertTo(LengthUnit.INCHES);
+
+        assertEquals(12.0, converted.getValue(), 1e-6);
+        assertEquals(LengthUnit.INCHES, converted.getUnit());
+
+        // Original object remains unchanged
+        assertEquals(1.0, original.getValue(), 1e-6);
+        assertEquals(LengthUnit.FEET, original.getUnit());
+    }
+
+    // UC5: String representation
+
+    @Test
+    void testConversion_ToString() {
+        QuantityLength length =
+                new QuantityLength(1.0, LengthUnit.FEET);
+
+        assertEquals(
+                "QuantityLength{value=1.0, unit=FEET}",
+                length.toString());
+    }
+
+
 }
