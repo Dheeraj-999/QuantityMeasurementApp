@@ -1,6 +1,15 @@
-﻿target/
+
+# Maven generated files
+target/
+
+# IntelliJ IDEA files
 .idea/
 *.iml
+
+# Eclipse files
 .classpath
 .project
 .settings/
+
+# Java compiled files
+*.class
