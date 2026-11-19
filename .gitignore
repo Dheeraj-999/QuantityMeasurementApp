@@ -1,0 +1,9 @@
+﻿# Maven generated files
+target/
+
+# IntelliJ IDEA files
+.idea/
+*.iml
+
+# Java compiled files
+*.class
