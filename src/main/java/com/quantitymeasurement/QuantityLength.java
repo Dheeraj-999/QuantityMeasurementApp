@@ -10,7 +10,8 @@ public class QuantityLength {
     public QuantityLength(double value, LengthUnit unit) {
 
         if (!Double.isFinite(value)) {
-            throw new IllegalArgumentException("Measurement value must be finite");
+            throw new IllegalArgumentException(
+                    "Measurement value must be finite");
         }
 
         if (unit == null) {
@@ -27,28 +28,15 @@ public class QuantityLength {
             LengthUnit source,
             LengthUnit target) {
 
-        if (!Double.isFinite(value)) {
-            throw new IllegalArgumentException("Measurement value must be finite");
-        }
-
         if (source == null || target == null) {
             throw new IllegalArgumentException(
                     "Source and target units cannot be null");
         }
 
-        // Convert source value into feet
-        double valueInFeet = value * source.getConversionFactor();
+        // Delegate conversion responsibility to LengthUnit
+        double baseValue = source.convertToBaseUnit(value);
 
-        // Convert feet into target unit
-        double convertedValue =
-                valueInFeet / target.getConversionFactor();
-
-        if (!Double.isFinite(convertedValue)) {
-            throw new IllegalArgumentException(
-                    "Converted value is outside the supported range");
-        }
-
-        return convertedValue;
+        return target.convertFromBaseUnit(baseValue);
     }
 
     // UC5: Instance method for conversion
@@ -69,7 +57,6 @@ public class QuantityLength {
                     "Length measurements cannot be null");
         }
 
-        // Default result unit is the first operand's unit
         return add(first, second, first.unit);
     }
 
@@ -89,7 +76,6 @@ public class QuantityLength {
                     "Target unit cannot be null");
         }
 
-        // Reuse the existing addition method
         return add(
                 first.value,
                 first.unit,
@@ -116,12 +102,9 @@ public class QuantityLength {
             throw new IllegalArgumentException("Units cannot be null");
         }
 
-        // Convert both values into feet
-        double firstInFeet =
-                value1 * unit1.getConversionFactor();
-
-        double secondInFeet =
-                value2 * unit2.getConversionFactor();
+        // Convert both measurements into the base unit (feet)
+        double firstInFeet = unit1.convertToBaseUnit(value1);
+        double secondInFeet = unit2.convertToBaseUnit(value2);
 
         // Add both measurements
         double sumInFeet = firstInFeet + secondInFeet;
@@ -132,18 +115,14 @@ public class QuantityLength {
         }
 
         // Convert the result into the requested target unit
-        double result = convert(
-                sumInFeet,
-                LengthUnit.FEET,
-                targetUnit
-        );
+        double result = targetUnit.convertFromBaseUnit(sumInFeet);
 
         return new QuantityLength(result, targetUnit);
     }
 
     // Convert the current measurement into feet
     private double convertToFeet() {
-        return value * unit.getConversionFactor();
+        return unit.convertToBaseUnit(value);
     }
 
     // Get measurement value

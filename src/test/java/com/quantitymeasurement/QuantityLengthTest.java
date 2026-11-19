@@ -946,5 +946,136 @@ class QuantityLengthTest {
         }
     }
 
+
+
+    // UC8: Verify conversion factors
+
+    @Test
+    void testUC8_FeetConversionFactor() {
+        assertEquals(1.0, LengthUnit.FEET.getConversionFactor());
+    }
+
+    @Test
+    void testUC8_InchesConversionFactor() {
+        assertEquals(1.0 / 12.0,
+                LengthUnit.INCHES.getConversionFactor());
+    }
+
+    @Test
+    void testUC8_YardsConversionFactor() {
+        assertEquals(3.0, LengthUnit.YARDS.getConversionFactor());
+    }
+
+    @Test
+    void testUC8_CentimetersConversionFactor() {
+        assertEquals(0.393701 / 12.0,
+                LengthUnit.CENTIMETERS.getConversionFactor());
+    }
+
+    // UC8: Convert different units into base unit (feet)
+
+    @Test
+    void testUC8_FeetToBaseUnit() {
+        assertEquals(5.0,
+                LengthUnit.FEET.convertToBaseUnit(5.0), 0.000001);
+    }
+
+    @Test
+    void testUC8_InchesToBaseUnit() {
+        assertEquals(1.0,
+                LengthUnit.INCHES.convertToBaseUnit(12.0), 0.000001);
+    }
+
+    @Test
+    void testUC8_YardsToBaseUnit() {
+        assertEquals(3.0,
+                LengthUnit.YARDS.convertToBaseUnit(1.0), 0.000001);
+    }
+
+    @Test
+    void testUC8_CentimetersToBaseUnit() {
+        assertEquals(1.0,
+                LengthUnit.CENTIMETERS.convertToBaseUnit(30.48), 0.0001);
+    }
+
+    // UC8: Convert base unit (feet) into other units
+
+    @Test
+    void testUC8_BaseUnitToInches() {
+        assertEquals(12.0,
+                LengthUnit.INCHES.convertFromBaseUnit(1.0), 0.000001);
+    }
+
+    @Test
+    void testUC8_BaseUnitToYards() {
+        assertEquals(1.0,
+                LengthUnit.YARDS.convertFromBaseUnit(3.0), 0.000001);
+    }
+
+    @Test
+    void testUC8_BaseUnitToCentimeters() {
+        assertEquals(30.48,
+                LengthUnit.CENTIMETERS.convertFromBaseUnit(1.0), 0.0001);
+    }
+
+    // UC8: Verify round-trip conversion for all units
+
+    @Test
+    void testUC8_RoundTripConversion() {
+        for (LengthUnit unit : LengthUnit.values()) {
+            double originalValue = 10.0;
+
+            double baseValue =
+                    unit.convertToBaseUnit(originalValue);
+
+            double convertedValue =
+                    unit.convertFromBaseUnit(baseValue);
+
+            assertEquals(originalValue, convertedValue, 0.000001);
+        }
+    }
+
+    // UC8: Validate invalid values
+
+    @Test
+    void testUC8_NaNToBaseUnit() {
+        assertThrows(IllegalArgumentException.class,
+                () -> LengthUnit.FEET.convertToBaseUnit(Double.NaN));
+    }
+
+    @Test
+    void testUC8_InfiniteToBaseUnit() {
+        assertThrows(IllegalArgumentException.class,
+                () -> LengthUnit.FEET.convertToBaseUnit(
+                        Double.POSITIVE_INFINITY));
+    }
+
+    @Test
+    void testUC8_NaNFromBaseUnit() {
+        assertThrows(IllegalArgumentException.class,
+                () -> LengthUnit.INCHES.convertFromBaseUnit(Double.NaN));
+    }
+
+    @Test
+    void testUC8_InfiniteFromBaseUnit() {
+        assertThrows(IllegalArgumentException.class,
+                () -> LengthUnit.INCHES.convertFromBaseUnit(
+                        Double.POSITIVE_INFINITY));
+    }
+
+    // UC8: Validate conversion overflow
+
+    @Test
+    void testUC8_ConversionToBaseUnitOverflow() {
+        assertThrows(IllegalArgumentException.class,
+                () -> LengthUnit.YARDS.convertToBaseUnit(Double.MAX_VALUE));
+    }
+
+    @Test
+    void testUC8_ConversionFromBaseUnitOverflow() {
+        assertThrows(IllegalArgumentException.class,
+                () -> LengthUnit.INCHES.convertFromBaseUnit(Double.MAX_VALUE));
+    }
+
 }
 
