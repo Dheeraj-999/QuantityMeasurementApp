@@ -685,6 +685,266 @@ class QuantityLengthTest {
         assertEquals(LengthUnit.INCHES, result.getUnit());
     }
 
+    // ==========================================
+    // UC7: Addition with Explicit Target Unit
+    // ==========================================
 
+    // 1. Addition with FEET as target unit
+    @Test
+    void testAddition_ExplicitTargetUnit_Feet() {
+
+        QuantityLength first =
+                new QuantityLength(1.0, LengthUnit.FEET);
+
+        QuantityLength second =
+                new QuantityLength(12.0, LengthUnit.INCHES);
+
+        QuantityLength result =
+                QuantityLength.add(first, second, LengthUnit.FEET);
+
+        assertEquals(2.0, result.getValue(), 1e-6);
+        assertEquals(LengthUnit.FEET, result.getUnit());
+    }
+
+    // 2. Addition with INCHES as target unit
+    @Test
+    void testAddition_ExplicitTargetUnit_Inches() {
+
+        QuantityLength first =
+                new QuantityLength(1.0, LengthUnit.FEET);
+
+        QuantityLength second =
+                new QuantityLength(1.0, LengthUnit.FEET);
+
+        QuantityLength result =
+                QuantityLength.add(first, second, LengthUnit.INCHES);
+
+        assertEquals(24.0, result.getValue(), 1e-6);
+        assertEquals(LengthUnit.INCHES, result.getUnit());
+    }
+
+    // 3. Addition with YARDS as target unit
+    @Test
+    void testAddition_ExplicitTargetUnit_Yards() {
+
+        QuantityLength first =
+                new QuantityLength(1.0, LengthUnit.FEET);
+
+        QuantityLength second =
+                new QuantityLength(12.0, LengthUnit.INCHES);
+
+        QuantityLength result =
+                QuantityLength.add(first, second, LengthUnit.YARDS);
+
+        assertEquals(2.0 / 3.0, result.getValue(), 1e-6);
+        assertEquals(LengthUnit.YARDS, result.getUnit());
+    }
+
+    // 4. Addition with CENTIMETERS as target unit
+    @Test
+    void testAddition_ExplicitTargetUnit_Centimeters() {
+
+        QuantityLength first =
+                new QuantityLength(1.0, LengthUnit.INCHES);
+
+        QuantityLength second =
+                new QuantityLength(1.0, LengthUnit.INCHES);
+
+        QuantityLength result =
+                QuantityLength.add(first, second, LengthUnit.CENTIMETERS);
+
+        assertEquals(5.08, result.getValue(), 1e-5);
+        assertEquals(LengthUnit.CENTIMETERS, result.getUnit());
+    }
+
+    // 5. Target unit same as first operand
+    @Test
+    void testAddition_TargetUnitSameAsFirstOperand() {
+
+        QuantityLength first =
+                new QuantityLength(2.0, LengthUnit.FEET);
+
+        QuantityLength second =
+                new QuantityLength(12.0, LengthUnit.INCHES);
+
+        QuantityLength result =
+                QuantityLength.add(first, second, LengthUnit.FEET);
+
+        assertEquals(3.0, result.getValue(), 1e-6);
+    }
+
+    // 6. Target unit same as second operand
+    @Test
+    void testAddition_TargetUnitSameAsSecondOperand() {
+
+        QuantityLength first =
+                new QuantityLength(1.0, LengthUnit.FEET);
+
+        QuantityLength second =
+                new QuantityLength(12.0, LengthUnit.INCHES);
+
+        QuantityLength result =
+                QuantityLength.add(first, second, LengthUnit.INCHES);
+
+        assertEquals(24.0, result.getValue(), 1e-6);
+    }
+
+    // 7. Addition should be commutative
+    @Test
+    void testAddition_ExplicitTargetUnit_Commutativity() {
+
+        QuantityLength first =
+                new QuantityLength(1.0, LengthUnit.FEET);
+
+        QuantityLength second =
+                new QuantityLength(12.0, LengthUnit.INCHES);
+
+        QuantityLength result1 =
+                QuantityLength.add(first, second, LengthUnit.YARDS);
+
+        QuantityLength result2 =
+                QuantityLength.add(second, first, LengthUnit.YARDS);
+
+        assertEquals(result1, result2);
+    }
+
+    // 8. Addition with zero
+    @Test
+    void testAddition_ExplicitTargetUnit_WithZero() {
+
+        QuantityLength first =
+                new QuantityLength(5.0, LengthUnit.FEET);
+
+        QuantityLength second =
+                new QuantityLength(0.0, LengthUnit.INCHES);
+
+        QuantityLength result =
+                QuantityLength.add(first, second, LengthUnit.INCHES);
+
+        assertEquals(60.0, result.getValue(), 1e-6);
+        assertEquals(LengthUnit.INCHES, result.getUnit());
+    }
+
+    // 9. Addition with negative values
+    @Test
+    void testAddition_ExplicitTargetUnit_NegativeValues() {
+
+        QuantityLength first =
+                new QuantityLength(5.0, LengthUnit.FEET);
+
+        QuantityLength second =
+                new QuantityLength(-2.0, LengthUnit.FEET);
+
+        QuantityLength result =
+                QuantityLength.add(first, second, LengthUnit.INCHES);
+
+        assertEquals(36.0, result.getValue(), 1e-6);
+    }
+
+    // 10. Null target unit should throw exception
+    @Test
+    void testAddition_ExplicitTargetUnit_NullTarget() {
+
+        QuantityLength first =
+                new QuantityLength(1.0, LengthUnit.FEET);
+
+        QuantityLength second =
+                new QuantityLength(12.0, LengthUnit.INCHES);
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> QuantityLength.add(first, second, null)
+        );
+    }
+
+    // 11. Original objects should remain unchanged
+    @Test
+    void testAddition_ExplicitTargetUnit_OriginalObjectsUnchanged() {
+
+        QuantityLength first =
+                new QuantityLength(1.0, LengthUnit.FEET);
+
+        QuantityLength second =
+                new QuantityLength(12.0, LengthUnit.INCHES);
+
+        QuantityLength.add(first, second, LengthUnit.YARDS);
+
+        assertEquals(1.0, first.getValue(), 1e-6);
+        assertEquals(LengthUnit.FEET, first.getUnit());
+
+        assertEquals(12.0, second.getValue(), 1e-6);
+        assertEquals(LengthUnit.INCHES, second.getUnit());
+    }
+
+    // 12. Large values
+    @Test
+    void testAddition_ExplicitTargetUnit_LargeValues() {
+
+        QuantityLength first =
+                new QuantityLength(1e100, LengthUnit.FEET);
+
+        QuantityLength second =
+                new QuantityLength(1e100, LengthUnit.FEET);
+
+        QuantityLength result =
+                QuantityLength.add(first, second, LengthUnit.FEET);
+
+        assertEquals(2e100, result.getValue(), 1e85);
+    }
+
+    // 13. Small values
+    @Test
+    void testAddition_ExplicitTargetUnit_SmallValues() {
+
+        QuantityLength first =
+                new QuantityLength(1e-9, LengthUnit.FEET);
+
+        QuantityLength second =
+                new QuantityLength(2e-9, LengthUnit.FEET);
+
+        QuantityLength result =
+                QuantityLength.add(first, second, LengthUnit.INCHES);
+
+        assertEquals(
+                QuantityLength.convert(3e-9, LengthUnit.FEET, LengthUnit.INCHES),
+                result.getValue(),
+                1e-15
+        );
+    }
+
+    // 14. All unit combinations should work
+    @Test
+    void testAddition_ExplicitTargetUnit_AllUnitCombinations() {
+
+        LengthUnit[] units = LengthUnit.values();
+
+        for (LengthUnit firstUnit : units) {
+            for (LengthUnit secondUnit : units) {
+                for (LengthUnit targetUnit : units) {
+
+                    QuantityLength first =
+                            new QuantityLength(1.0, firstUnit);
+
+                    QuantityLength second =
+                            new QuantityLength(1.0, secondUnit);
+
+                    QuantityLength result =
+                            QuantityLength.add(first, second, targetUnit);
+
+                    assertEquals(targetUnit, result.getUnit());
+
+                    double expected = QuantityLength.convert(
+                            firstUnit.getConversionFactor()
+                                    + secondUnit.getConversionFactor(),
+                            LengthUnit.FEET,
+                            targetUnit
+                    );
+
+                    assertEquals(expected, result.getValue(), 1e-6);
+                }
+            }
+        }
+    }
 
 }
+

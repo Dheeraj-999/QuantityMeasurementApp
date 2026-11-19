@@ -1,28 +1,18 @@
 
 package com.quantitymeasurement;
 
-/**
- * Generic class representing length measurements.
- * Supports equality checking, conversion and addition.
- */
 public class QuantityLength {
 
-    // Stores the measurement value
     private final double value;
-
-    // Stores the measurement unit
     private final LengthUnit unit;
 
-    // Constructor to initialize value and unit
+    // Constructor
     public QuantityLength(double value, LengthUnit unit) {
 
-        // Validate that the value is finite
         if (!Double.isFinite(value)) {
-            throw new IllegalArgumentException(
-                    "Measurement value must be finite");
+            throw new IllegalArgumentException("Measurement value must be finite");
         }
 
-        // Validate that the unit is not null
         if (unit == null) {
             throw new IllegalArgumentException("Unit cannot be null");
         }
@@ -31,15 +21,14 @@ public class QuantityLength {
         this.unit = unit;
     }
 
-    /**
-     * Converts a measurement from one unit to another.
-     */
+    // UC5: Convert a value from one unit to another
     public static double convert(
-            double value, LengthUnit source, LengthUnit target) {
+            double value,
+            LengthUnit source,
+            LengthUnit target) {
 
         if (!Double.isFinite(value)) {
-            throw new IllegalArgumentException(
-                    "Measurement value must be finite");
+            throw new IllegalArgumentException("Measurement value must be finite");
         }
 
         if (source == null || target == null) {
@@ -47,10 +36,10 @@ public class QuantityLength {
                     "Source and target units cannot be null");
         }
 
-        // Convert the value into the common base unit (feet)
+        // Convert source value into feet
         double valueInFeet = value * source.getConversionFactor();
 
-        // Convert from feet into the target unit
+        // Convert feet into target unit
         double convertedValue =
                 valueInFeet / target.getConversionFactor();
 
@@ -62,10 +51,7 @@ public class QuantityLength {
         return convertedValue;
     }
 
-    /**
-     * Converts the current measurement into another unit.
-     * Returns a new QuantityLength object.
-     */
+    // UC5: Instance method for conversion
     public QuantityLength convertTo(LengthUnit target) {
 
         double convertedValue = convert(value, unit, target);
@@ -73,75 +59,69 @@ public class QuantityLength {
         return new QuantityLength(convertedValue, target);
     }
 
-    /**
-     * UC6: Adds two QuantityLength objects.
-     * The result is expressed in the first operand's unit.
-     *
-     * @param first first length measurement
-     * @param second second length measurement
-     * @return new QuantityLength object containing the sum
-     */
+    // UC6: Addition with result in the first operand's unit
     public static QuantityLength add(
-            QuantityLength first, QuantityLength second) {
+            QuantityLength first,
+            QuantityLength second) {
 
-        // Validate both operands
         if (first == null || second == null) {
             throw new IllegalArgumentException(
                     "Length measurements cannot be null");
         }
 
-        // Convert both measurements into feet
-        double firstInFeet = first.convertToFeet();
-        double secondInFeet = second.convertToFeet();
-
-        // Add both measurements
-        double sumInFeet = firstInFeet + secondInFeet;
-
-        // Validate addition result
-        if (!Double.isFinite(sumInFeet)) {
-            throw new IllegalArgumentException(
-                    "Addition result is outside the supported range");
-        }
-
-        // Convert the result into the first operand's unit
-        double result = convert(
-                sumInFeet, LengthUnit.FEET, first.unit);
-
-        // Return a new immutable object
-        return new QuantityLength(result, first.unit);
+        // Default result unit is the first operand's unit
+        return add(first, second, first.unit);
     }
 
-    /**
-     * UC6: Adds two raw length measurements.
-     * The result is expressed in the specified target unit.
-     *
-     * @param value1 first measurement value
-     * @param unit1 first measurement unit
-     * @param value2 second measurement value
-     * @param unit2 second measurement unit
-     * @param targetUnit unit of the result
-     * @return new QuantityLength object containing the sum
-     */
+    // UC7: Addition with explicitly specified target unit
     public static QuantityLength add(
-            double value1, LengthUnit unit1,
-            double value2, LengthUnit unit2,
+            QuantityLength first,
+            QuantityLength second,
             LengthUnit targetUnit) {
 
-        // Validate input values
+        if (first == null || second == null) {
+            throw new IllegalArgumentException(
+                    "Length measurements cannot be null");
+        }
+
+        if (targetUnit == null) {
+            throw new IllegalArgumentException(
+                    "Target unit cannot be null");
+        }
+
+        // Reuse the existing addition method
+        return add(
+                first.value,
+                first.unit,
+                second.value,
+                second.unit,
+                targetUnit
+        );
+    }
+
+    // UC6: Addition using raw values with a specified target unit
+    public static QuantityLength add(
+            double value1,
+            LengthUnit unit1,
+            double value2,
+            LengthUnit unit2,
+            LengthUnit targetUnit) {
+
         if (!Double.isFinite(value1) || !Double.isFinite(value2)) {
             throw new IllegalArgumentException(
                     "Measurement values must be finite");
         }
 
-        // Validate all units
         if (unit1 == null || unit2 == null || targetUnit == null) {
-            throw new IllegalArgumentException(
-                    "Units cannot be null");
+            throw new IllegalArgumentException("Units cannot be null");
         }
 
-        // Convert both measurements into feet
-        double firstInFeet = value1 * unit1.getConversionFactor();
-        double secondInFeet = value2 * unit2.getConversionFactor();
+        // Convert both values into feet
+        double firstInFeet =
+                value1 * unit1.getConversionFactor();
+
+        double secondInFeet =
+                value2 * unit2.getConversionFactor();
 
         // Add both measurements
         double sumInFeet = firstInFeet + secondInFeet;
@@ -151,19 +131,32 @@ public class QuantityLength {
                     "Addition result is outside the supported range");
         }
 
-        // Convert the sum into the requested target unit
+        // Convert the result into the requested target unit
         double result = convert(
-                sumInFeet, LengthUnit.FEET, targetUnit);
+                sumInFeet,
+                LengthUnit.FEET,
+                targetUnit
+        );
 
         return new QuantityLength(result, targetUnit);
     }
 
-    // Converts the measurement into the common base unit (feet)
+    // Convert the current measurement into feet
     private double convertToFeet() {
         return value * unit.getConversionFactor();
     }
 
-    // Compares two QuantityLength objects
+    // Get measurement value
+    public double getValue() {
+        return value;
+    }
+
+    // Get measurement unit
+    public LengthUnit getUnit() {
+        return unit;
+    }
+
+    // Compare two measurements
     @Override
     public boolean equals(Object obj) {
 
@@ -183,23 +176,13 @@ public class QuantityLength {
         ) == 0;
     }
 
-    // Generate hash code using the converted measurement
+    // Generate hash code
     @Override
     public int hashCode() {
         return Double.hashCode(convertToFeet());
     }
 
-    // Getter for measurement value
-    public double getValue() {
-        return value;
-    }
-
-    // Getter for measurement unit
-    public LengthUnit getUnit() {
-        return unit;
-    }
-
-    // Returns a readable representation of the measurement
+    // Display measurement
     @Override
     public String toString() {
         return "QuantityLength{" +
