@@ -3,93 +3,81 @@ package com.quantitymeasurement;
 
 public class QuantityMeasurementApp {
 
-    // Inner class representing a measurement in feet
+    // UC1 compatibility wrapper for Feet measurements
     public class Feet {
 
-        private final double value;
+        private final QuantityLength quantity;
 
-        // Constructor to initialize feet value
         public Feet(double value) {
-            this.value = value;
+            quantity = new QuantityLength(value, LengthUnit.FEET);
         }
 
-        // Getter to access feet value
         public double getValue() {
-            return value;
+            return quantity.getValue();
         }
 
-        // Compare two Feet objects based on their values
         @Override
         public boolean equals(Object obj) {
 
-            // Check whether both references point to the same object
             if (this == obj) {
                 return true;
             }
 
-            // Check for null or different object types
+            // Feet objects are compared only with other Feet objects
             if (obj == null || getClass() != obj.getClass()) {
                 return false;
             }
 
-            // Typecast Object into Feet
             Feet other = (Feet) obj;
 
-            // Compare measurement values
-            return Double.compare(this.value, other.value) == 0;
+            // Delegate comparison to QuantityLength
+            return quantity.equals(other.quantity);
         }
 
-        // Maintain equals() and hashCode() contract
         @Override
         public int hashCode() {
-            return Double.hashCode(value);
+            return quantity.hashCode();
         }
     }
 
-    // UC2: Inner class representing a measurement in inches
+    // UC2 compatibility wrapper for Inches measurements
     public class Inches {
 
-        private final double value;
+        private final QuantityLength quantity;
 
-        // Constructor to initialize inches value
         public Inches(double value) {
-            this.value = value;
+            quantity = new QuantityLength(value, LengthUnit.INCHES);
         }
 
-        // Getter to access inches value
         public double getValue() {
-            return value;
+            return quantity.getValue();
         }
 
-        // Compare two Inches objects based on their values
         @Override
         public boolean equals(Object obj) {
 
-            // Check whether both references point to the same object
             if (this == obj) {
                 return true;
             }
 
-            // Check for null or different object types
+            // Inches objects are compared only with other Inches objects
             if (obj == null || getClass() != obj.getClass()) {
                 return false;
             }
 
-            // Typecast Object into Inches
             Inches other = (Inches) obj;
 
-            // Compare measurement values
-            return Double.compare(this.value, other.value) == 0;
+            // Delegate comparison to QuantityLength
+            return quantity.equals(other.quantity);
         }
 
-        // Maintain equals() and hashCode() contract
         @Override
         public int hashCode() {
-            return Double.hashCode(value);
+            return quantity.hashCode();
         }
     }
 
-    // Static method to compare two feet measurements
+    // UC1: Static method to compare two feet measurements
     public static boolean areFeetEqual(double value1, double value2) {
 
         QuantityMeasurementApp app = new QuantityMeasurementApp();
@@ -100,7 +88,7 @@ public class QuantityMeasurementApp {
         return feet1.equals(feet2);
     }
 
-    // Static method to compare two inches measurements
+    // UC2: Static method to compare two inches measurements
     public static boolean areInchesEqual(double value1, double value2) {
 
         QuantityMeasurementApp app = new QuantityMeasurementApp();
@@ -111,19 +99,35 @@ public class QuantityMeasurementApp {
         return inches1.equals(inches2);
     }
 
-    // Main method to demonstrate UC1 and UC2 functionality
+    // UC3: Compare two quantities with their respective units
+    public static boolean areQuantitiesEqual(
+            double value1, LengthUnit unit1,
+            double value2, LengthUnit unit2) {
+
+        QuantityLength quantity1 = new QuantityLength(value1, unit1);
+        QuantityLength quantity2 = new QuantityLength(value2, unit2);
+
+        return quantity1.equals(quantity2);
+    }
+
+    // Main method to demonstrate UC1, UC2 and UC3
     public static void main(String[] args) {
 
-        // UC1: Compare feet measurements
+        // UC1: Feet-to-feet comparison
         System.out.println(
-                "Are feet measurements equal? " +
-                        areFeetEqual(1.0, 1.0)
+                "Feet equality: " + areFeetEqual(1.0, 1.0)
         );
 
-        // UC2: Compare inches measurements
+        // UC2: Inches-to-inches comparison
         System.out.println(
-                "Are inches measurements equal? " +
-                        areInchesEqual(1.0, 1.0)
+                "Inches equality: " + areInchesEqual(1.0, 1.0)
+        );
+
+        // UC3: Feet-to-inches comparison
+        System.out.println(
+                "Feet-to-inches equality: " +
+                        areQuantitiesEqual(1.0, LengthUnit.FEET,
+                                12.0, LengthUnit.INCHES)
         );
     }
 }
