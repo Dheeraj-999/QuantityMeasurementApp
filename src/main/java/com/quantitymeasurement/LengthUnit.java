@@ -13,7 +13,7 @@ public enum LengthUnit {
     // Stores the conversion factor
     private final double conversionFactor;
 
-    // Constructor to initialize the conversion factor
+    // Constructor
     LengthUnit(double conversionFactor) {
         this.conversionFactor = conversionFactor;
     }
@@ -21,5 +21,41 @@ public enum LengthUnit {
     // Returns the conversion factor
     public double getConversionFactor() {
         return conversionFactor;
+    }
+
+    // UC8: Converts the given unit value into the base unit (feet)
+    public double convertToBaseUnit(double value) {
+
+        if (!Double.isFinite(value)) {
+            throw new IllegalArgumentException(
+                    "Measurement value must be finite");
+        }
+
+        double baseValue = value * conversionFactor;
+
+        if (!Double.isFinite(baseValue)) {
+            throw new IllegalArgumentException(
+                    "Converted value is outside the supported range");
+        }
+
+        return baseValue;
+    }
+
+    // UC8: Converts a base unit value (feet) into this unit
+    public double convertFromBaseUnit(double baseValue) {
+
+        if (!Double.isFinite(baseValue)) {
+            throw new IllegalArgumentException(
+                    "Base unit value must be finite");
+        }
+
+        double convertedValue = baseValue / conversionFactor;
+
+        if (!Double.isFinite(convertedValue)) {
+            throw new IllegalArgumentException(
+                    "Converted value is outside the supported range");
+        }
+
+        return convertedValue;
     }
 }
