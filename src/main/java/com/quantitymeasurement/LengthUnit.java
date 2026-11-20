@@ -2,7 +2,7 @@
 package com.quantitymeasurement;
 
 // Enum defining supported length units
-public enum LengthUnit {
+public enum LengthUnit implements IMeasurable {
 
     // Conversion factors relative to feet (base unit)
     FEET(1.0),
@@ -10,25 +10,21 @@ public enum LengthUnit {
     YARDS(3.0),
     CENTIMETERS(0.393701 / 12.0);
 
-    // Stores the conversion factor
     private final double conversionFactor;
 
-    // Constructor
     LengthUnit(double conversionFactor) {
         this.conversionFactor = conversionFactor;
     }
 
-    // Returns the conversion factor
+    @Override
     public double getConversionFactor() {
         return conversionFactor;
     }
 
-    // UC8: Converts the given unit value into the base unit (feet)
+    @Override
     public double convertToBaseUnit(double value) {
-
         if (!Double.isFinite(value)) {
-            throw new IllegalArgumentException(
-                    "Measurement value must be finite");
+            throw new IllegalArgumentException("Length value must be finite");
         }
 
         double baseValue = value * conversionFactor;
@@ -41,12 +37,10 @@ public enum LengthUnit {
         return baseValue;
     }
 
-    // UC8: Converts a base unit value (feet) into this unit
+    @Override
     public double convertFromBaseUnit(double baseValue) {
-
         if (!Double.isFinite(baseValue)) {
-            throw new IllegalArgumentException(
-                    "Base unit value must be finite");
+            throw new IllegalArgumentException("Base unit value must be finite");
         }
 
         double convertedValue = baseValue / conversionFactor;
@@ -57,5 +51,10 @@ public enum LengthUnit {
         }
 
         return convertedValue;
+    }
+
+    @Override
+    public String getUnitName() {
+        return name();
     }
 }

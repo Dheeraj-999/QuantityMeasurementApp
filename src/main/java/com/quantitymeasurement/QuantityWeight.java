@@ -1,49 +1,29 @@
 
 package com.quantitymeasurement;
 
-// Represents a weight measurement.
-// Weight and length are separate measurement categories.
+// Compatibility wrapper for weight measurements
 public class QuantityWeight {
 
-    private final double value;
-    private final WeightUnit unit;
+    private final Quantity<WeightUnit> quantity;
 
     // Constructor
     public QuantityWeight(double value, WeightUnit unit) {
-
-        if (!Double.isFinite(value)) {
-            throw new IllegalArgumentException(
-                    "Weight value must be finite");
-        }
-
-        if (unit == null) {
-            throw new IllegalArgumentException(
-                    "Weight unit cannot be null");
-        }
-
-        this.value = value;
-        this.unit = unit;
+        this.quantity = new Quantity<>(value, unit);
     }
 
-    // UC9: Convert weight from one unit to another
+    // UC9: Convert weight into another unit
     public QuantityWeight convertTo(WeightUnit targetUnit) {
 
-        if (targetUnit == null) {
-            throw new IllegalArgumentException(
-                    "Target unit cannot be null");
-        }
+        Quantity<WeightUnit> converted =
+                quantity.convertTo(targetUnit);
 
-        // Convert current weight into kilograms
-        double valueInKilograms = unit.convertToBaseUnit(value);
-
-        // Convert kilograms into the target unit
-        double convertedValue =
-                targetUnit.convertFromBaseUnit(valueInKilograms);
-
-        return new QuantityWeight(convertedValue, targetUnit);
+        return new QuantityWeight(
+                converted.getValue(),
+                converted.getUnit()
+        );
     }
 
-    // UC9: Addition with result in the first operand's unit
+    // UC9: Addition in the first measurement's unit
     public static QuantityWeight add(
             QuantityWeight first,
             QuantityWeight second) {
@@ -53,7 +33,7 @@ public class QuantityWeight {
                     "Weight measurements cannot be null");
         }
 
-        return add(first, second, first.unit);
+        return add(first, second, first.getUnit());
     }
 
     // UC9: Addition with an explicitly specified target unit
@@ -67,42 +47,23 @@ public class QuantityWeight {
                     "Weight measurements cannot be null");
         }
 
-        if (targetUnit == null) {
-            throw new IllegalArgumentException(
-                    "Target unit cannot be null");
-        }
+        Quantity<WeightUnit> result =
+                first.quantity.add(second.quantity, targetUnit);
 
-        // Convert both weights into kilograms
-        double firstInKilograms =
-                first.unit.convertToBaseUnit(first.value);
-
-        double secondInKilograms =
-                second.unit.convertToBaseUnit(second.value);
-
-        // Add both measurements
-        double sumInKilograms =
-                firstInKilograms + secondInKilograms;
-
-        if (!Double.isFinite(sumInKilograms)) {
-            throw new IllegalArgumentException(
-                    "Addition result is outside the supported range");
-        }
-
-        // Convert the result into the requested target unit
-        double result =
-                targetUnit.convertFromBaseUnit(sumInKilograms);
-
-        return new QuantityWeight(result, targetUnit);
+        return new QuantityWeight(
+                result.getValue(),
+                result.getUnit()
+        );
     }
 
     // Get measurement value
     public double getValue() {
-        return value;
+        return quantity.getValue();
     }
 
     // Get measurement unit
     public WeightUnit getUnit() {
-        return unit;
+        return quantity.getUnit();
     }
 
     // Compare two weight measurements
@@ -113,37 +74,27 @@ public class QuantityWeight {
             return true;
         }
 
-        if (obj == null || getClass() != obj.getClass()) {
+        if (!(obj instanceof QuantityWeight)) {
             return false;
         }
 
         QuantityWeight other = (QuantityWeight) obj;
 
-        // Normalize both measurements into kilograms
-        double thisInKilograms =
-                unit.convertToBaseUnit(value);
-
-        double otherInKilograms =
-                other.unit.convertToBaseUnit(other.value);
-
-        return Double.compare(
-                thisInKilograms,
-                otherInKilograms
-        ) == 0;
+        return quantity.equals(other.quantity);
     }
 
     // Generate hash code
     @Override
     public int hashCode() {
-        return Double.hashCode(unit.convertToBaseUnit(value));
+        return quantity.hashCode();
     }
 
     // Display measurement
     @Override
     public String toString() {
         return "QuantityWeight{" +
-                "value=" + value +
-                ", unit=" + unit +
+                "value=" + getValue() +
+                ", unit=" + getUnit() +
                 '}';
     }
 }

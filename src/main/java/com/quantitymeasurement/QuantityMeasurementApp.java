@@ -143,41 +143,74 @@ public class QuantityMeasurementApp {
     }
 
     // Main method to demonstrate all implemented functionality
+
+    // Main method demonstrating generic measurements
     public static void main(String[] args) {
 
-        // UC1: Feet equality
-        System.out.println("Feet equality: " +
-                areFeetEqual(1.0, 1.0));
+        // Length measurements
+        Quantity<LengthUnit> length1 =
+                new Quantity<>(1.0, LengthUnit.FEET);
 
-        // UC2: Inches equality
-        System.out.println("Inches equality: " +
-                areInchesEqual(1.0, 1.0));
+        Quantity<LengthUnit> length2 =
+                new Quantity<>(12.0, LengthUnit.INCHES);
 
-        // UC3: Feet-to-inches equality
-        System.out.println("Feet-to-inches equality: " +
-                areQuantitiesEqual(
-                        1.0, LengthUnit.FEET,
-                        12.0, LengthUnit.INCHES));
+        System.out.println("=== LENGTH MEASUREMENTS ===");
 
-        // UC5: Conversion using raw values
-        demonstrateLengthConversion(
-                1.0, LengthUnit.FEET, LengthUnit.INCHES);
+        demonstrateEquality(length1, length2);
 
-        demonstrateLengthConversion(
-                3.0, LengthUnit.YARDS, LengthUnit.FEET);
+        demonstrateConversion(length1, LengthUnit.INCHES);
 
-        demonstrateLengthConversion(
-                36.0, LengthUnit.INCHES, LengthUnit.YARDS);
+        demonstrateAddition(length1, length2);
 
-        // UC5: Conversion using an existing object
-        QuantityLength length =
-                new QuantityLength(1.0, LengthUnit.YARDS);
 
-        demonstrateLengthConversion(length, LengthUnit.INCHES);
+        // Weight measurements
+        Quantity<WeightUnit> weight1 =
+                new Quantity<>(1.0, WeightUnit.KILOGRAM);
 
-        // UC5: Demonstrate equality
-        demonstrateLengthComparison(
-                1.0, LengthUnit.FEET,
-                12.0, LengthUnit.INCHES);
+        Quantity<WeightUnit> weight2 =
+                new Quantity<>(500.0, WeightUnit.GRAM);
+
+        System.out.println("\n=== WEIGHT MEASUREMENTS ===");
+
+        demonstrateEquality(weight1,
+                new Quantity<>(1000.0, WeightUnit.GRAM));
+
+        demonstrateConversion(weight1, WeightUnit.GRAM);
+
+        demonstrateAddition(weight1, weight2);
+
+
+        // Cross-category equality
+        System.out.println("\n=== DIFFERENT CATEGORIES ===");
+
+        demonstrateEquality(length1, weight1);
+    }
+
+
+    // Generic method to demonstrate measurement equality
+    public static void demonstrateEquality(
+            Quantity<? extends IMeasurable> first,
+            Quantity<? extends IMeasurable> second) {
+
+        System.out.println("Are measurements equal? " + first.equals(second));
+    }
+
+    // Generic method to demonstrate conversion
+    public static <U extends IMeasurable> void demonstrateConversion(
+            Quantity<U> quantity,
+            U targetUnit) {
+
+        Quantity<U> converted = quantity.convertTo(targetUnit);
+
+        System.out.println("Original: " + quantity);
+        System.out.println("Converted: " + converted);
+    }
+
+    // Generic method to demonstrate addition
+    public static <U extends IMeasurable> void demonstrateAddition(
+            Quantity<U> first,
+            Quantity<U> second) {
+
+        System.out.println("Addition result: " + first.add(second));
     }
 }
