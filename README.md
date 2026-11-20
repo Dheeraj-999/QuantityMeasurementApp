@@ -1,19 +1,18 @@
-## UC10 – Generic Quantity Class
+
+## UC11 – Volume Measurement
 
 ### What I did
-- Created a common `IMeasurable` interface for measurement units.
-- Updated `LengthUnit` and `WeightUnit` to implement the interface.
-- Created a generic `Quantity<U>` class to handle different measurement categories.
-- Implemented generic equality, conversion, and addition.
-- Refactored `QuantityLength` and `QuantityWeight` to use the generic class.
-- Updated the application to demonstrate length and weight measurements using generics.
-- Added 15 test cases for the generic quantity class.
+- Created a new `VolumeUnit` enum implementing the `IMeasurable` interface.
+- Added three volume units: Litre, Millilitre, and Gallon.
+- Used Litre as the base unit for volume conversion.
+- Implemented conversion between different volume units.
+- Used the generic `Quantity<VolumeUnit>` class for equality, conversion, and addition.
+- Added 28 test cases covering volume measurements and validations.
 
 ### What it is used for
-The generic quantity class avoids repeating the same measurement logic for different categories. It supports length and weight measurements through one reusable implementation.
+This use case extends the application to support volume measurements. Users can compare, convert, and add quantities expressed in litres, millilitres, and gallons using the existing generic measurement system.
 
 ### Testing
-- Previous UC1–UC9 tests: 144
-- New UC10 tests: 15
-- Total: 159 tests
-  144 project tests passed successfully**.
+- Previous UC1–UC10 tests: 159
+- New UC11 tests: 28
+- Total: 187 tests passed
