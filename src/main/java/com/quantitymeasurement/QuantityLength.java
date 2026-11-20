@@ -1,53 +1,38 @@
 
 package com.quantitymeasurement;
 
+// Compatibility wrapper for length measurements
 public class QuantityLength {
 
-    private final double value;
-    private final LengthUnit unit;
+    private final Quantity<LengthUnit> quantity;
 
     // Constructor
     public QuantityLength(double value, LengthUnit unit) {
-
-        if (!Double.isFinite(value)) {
-            throw new IllegalArgumentException(
-                    "Measurement value must be finite");
-        }
-
-        if (unit == null) {
-            throw new IllegalArgumentException("Unit cannot be null");
-        }
-
-        this.value = value;
-        this.unit = unit;
+        this.quantity = new Quantity<>(value, unit);
     }
 
-    // UC5: Convert a value from one unit to another
+    // UC5: Static conversion
     public static double convert(
             double value,
             LengthUnit source,
             LengthUnit target) {
 
-        if (source == null || target == null) {
-            throw new IllegalArgumentException(
-                    "Source and target units cannot be null");
-        }
-
-        // Delegate conversion responsibility to LengthUnit
-        double baseValue = source.convertToBaseUnit(value);
-
-        return target.convertFromBaseUnit(baseValue);
+        return new Quantity<>(value, source)
+                .convertTo(target)
+                .getValue();
     }
 
-    // UC5: Instance method for conversion
+    // UC5: Instance conversion
     public QuantityLength convertTo(LengthUnit target) {
+        Quantity<LengthUnit> converted = quantity.convertTo(target);
 
-        double convertedValue = convert(value, unit, target);
-
-        return new QuantityLength(convertedValue, target);
+        return new QuantityLength(
+                converted.getValue(),
+                converted.getUnit()
+        );
     }
 
-    // UC6: Addition with result in the first operand's unit
+    // UC6: Addition in the first measurement's unit
     public static QuantityLength add(
             QuantityLength first,
             QuantityLength second) {
@@ -57,10 +42,10 @@ public class QuantityLength {
                     "Length measurements cannot be null");
         }
 
-        return add(first, second, first.unit);
+        return add(first, second, first.getUnit());
     }
 
-    // UC7: Addition with explicitly specified target unit
+    // UC7: Addition with an explicitly specified target unit
     public static QuantityLength add(
             QuantityLength first,
             QuantityLength second,
@@ -71,21 +56,16 @@ public class QuantityLength {
                     "Length measurements cannot be null");
         }
 
-        if (targetUnit == null) {
-            throw new IllegalArgumentException(
-                    "Target unit cannot be null");
-        }
+        Quantity<LengthUnit> result =
+                first.quantity.add(second.quantity, targetUnit);
 
-        return add(
-                first.value,
-                first.unit,
-                second.value,
-                second.unit,
-                targetUnit
+        return new QuantityLength(
+                result.getValue(),
+                result.getUnit()
         );
     }
 
-    // UC6: Addition using raw values with a specified target unit
+    // UC6: Addition using raw values
     public static QuantityLength add(
             double value1,
             LengthUnit unit1,
@@ -93,80 +73,54 @@ public class QuantityLength {
             LengthUnit unit2,
             LengthUnit targetUnit) {
 
-        if (!Double.isFinite(value1) || !Double.isFinite(value2)) {
-            throw new IllegalArgumentException(
-                    "Measurement values must be finite");
-        }
+        Quantity<LengthUnit> first =
+                new Quantity<>(value1, unit1);
 
-        if (unit1 == null || unit2 == null || targetUnit == null) {
-            throw new IllegalArgumentException("Units cannot be null");
-        }
+        Quantity<LengthUnit> second =
+                new Quantity<>(value2, unit2);
 
-        // Convert both measurements into the base unit (feet)
-        double firstInFeet = unit1.convertToBaseUnit(value1);
-        double secondInFeet = unit2.convertToBaseUnit(value2);
+        Quantity<LengthUnit> result =
+                first.add(second, targetUnit);
 
-        // Add both measurements
-        double sumInFeet = firstInFeet + secondInFeet;
-
-        if (!Double.isFinite(sumInFeet)) {
-            throw new IllegalArgumentException(
-                    "Addition result is outside the supported range");
-        }
-
-        // Convert the result into the requested target unit
-        double result = targetUnit.convertFromBaseUnit(sumInFeet);
-
-        return new QuantityLength(result, targetUnit);
+        return new QuantityLength(
+                result.getValue(),
+                result.getUnit()
+        );
     }
 
-    // Convert the current measurement into feet
-    private double convertToFeet() {
-        return unit.convertToBaseUnit(value);
-    }
-
-    // Get measurement value
     public double getValue() {
-        return value;
+        return quantity.getValue();
     }
 
-    // Get measurement unit
     public LengthUnit getUnit() {
-        return unit;
+        return quantity.getUnit();
     }
 
-    // Compare two measurements
     @Override
     public boolean equals(Object obj) {
-
         if (this == obj) {
             return true;
         }
 
-        if (obj == null || getClass() != obj.getClass()) {
+        if (!(obj instanceof QuantityLength)) {
             return false;
         }
 
         QuantityLength other = (QuantityLength) obj;
 
-        return Double.compare(
-                this.convertToFeet(),
-                other.convertToFeet()
-        ) == 0;
+        return quantity.equals(other.quantity);
     }
 
-    // Generate hash code
     @Override
     public int hashCode() {
-        return Double.hashCode(convertToFeet());
+        return quantity.hashCode();
     }
 
-    // Display measurement
     @Override
     public String toString() {
         return "QuantityLength{" +
-                "value=" + value +
-                ", unit=" + unit +
+                "value=" + getValue() +
+                ", unit=" + getUnit() +
                 '}';
     }
 }

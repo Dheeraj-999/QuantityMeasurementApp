@@ -1,16 +1,19 @@
-### UC9: Weight Measurement Equality, Conversion, and Addition
+## UC10 – Generic Quantity Class
 
-**What I did:**
-- Added support for Kilograms, Grams, and Pounds.
-- Created `WeightUnit` to handle weight conversions using Kilograms as the base unit.
-- Created `QuantityWeight` to compare, convert, and add weight measurements.
-- Supported addition with both default and explicitly selected result units.
-- Kept weight measurements independent of length measurements.
+### What I did
+- Created a common `IMeasurable` interface for measurement units.
+- Updated `LengthUnit` and `WeightUnit` to implement the interface.
+- Created a generic `Quantity<U>` class to handle different measurement categories.
+- Implemented generic equality, conversion, and addition.
+- Refactored `QuantityLength` and `QuantityWeight` to use the generic class.
+- Updated the application to demonstrate length and weight measurements using generics.
+- Added 15 test cases for the generic quantity class.
 
-**What it is used for:**
+### What it is used for
+The generic quantity class avoids repeating the same measurement logic for different categories. It supports length and weight measurements through one reusable implementation.
 
-Users can compare, convert, and add weights in different units without affecting the existing length measurement functionality.
-
-**Testing:**
-- Added UC9 test cases.
-- All **144 project tests passed successfully**.
+### Testing
+- Previous UC1–UC9 tests: 144
+- New UC10 tests: 15
+- Total: 159 tests
+  144 project tests passed successfully**.
